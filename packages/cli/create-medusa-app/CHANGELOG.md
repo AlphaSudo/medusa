@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.13.7
+
+### Patch Changes
+
+- [#14999](https://github.com/medusajs/medusa/pull/14999) [`eeed5a11f7ab1110038fa02d0f6cb1e3ca18cf3d`](https://github.com/medusajs/medusa/commit/eeed5a11f7ab1110038fa02d0f6cb1e3ca18cf3d) Thanks [@shahednasser](https://github.com/shahednasser)! - feat(create-medusa-app, cli): change cloned repository to monorepo
+
+- Updated dependencies []:
+  - @medusajs/deps@2.13.7
+  - @medusajs/telemetry@2.13.7
+
 ## 2.13.6
 
 ### Patch Changes

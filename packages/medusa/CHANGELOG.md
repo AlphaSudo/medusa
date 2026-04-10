@@ -1,5 +1,80 @@
 # Change Log
 
+## 2.13.7
+
+### Patch Changes
+
+- [#14309](https://github.com/medusajs/medusa/pull/14309) [`843dbfe7c8f27b732486c7a8da7b6d63f2fdf967`](https://github.com/medusajs/medusa/commit/843dbfe7c8f27b732486c7a8da7b6d63f2fdf967) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): upgrade zod to latest
+
+- [#13975](https://github.com/medusajs/medusa/pull/13975) [`67499a8aa6b3b53cbdecb5be9fcc358b4e466696`](https://github.com/medusajs/medusa/commit/67499a8aa6b3b53cbdecb5be9fcc358b4e466696) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(currency,payment,pricing,region,order,store,cart,core-flows,medusa,utils): repo wide currency_code normalization
+
+- [#14650](https://github.com/medusajs/medusa/pull/14650) [`965adfe2fc15a024270ac384f819479e8b274e10`](https://github.com/medusajs/medusa/commit/965adfe2fc15a024270ac384f819479e8b274e10) Thanks [@adrien2p](https://github.com/adrien2p)! - Feat(view configuration): Generic introspection and generation
+
+- [#14886](https://github.com/medusajs/medusa/pull/14886) [`5ef7953ec3bbcdafe452db813e5c5b07a1c1f0ba`](https://github.com/medusajs/medusa/commit/5ef7953ec3bbcdafe452db813e5c5b07a1c1f0ba) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - chore(medusa,core-flows): include variant images in product export
+
+- [#14826](https://github.com/medusajs/medusa/pull/14826) [`923a869a7d462c2e0399619ac2b35c16132e079c`](https://github.com/medusajs/medusa/commit/923a869a7d462c2e0399619ac2b35c16132e079c) Thanks [@asgerjensen](https://github.com/asgerjensen)! - chore(medusa,types): allow filtering on variant sku/barcode/ean/upc on both /store and /admin apis
+
+- [#14570](https://github.com/medusajs/medusa/pull/14570) [`9e1e7082c3437ee2ae01d6752b624d4b4d905604`](https://github.com/medusajs/medusa/commit/9e1e7082c3437ee2ae01d6752b624d4b4d905604) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - feat(core-flows,order,medusa,types): update item metadata on item_update change action
+
+- [#14482](https://github.com/medusajs/medusa/pull/14482) [`d9af2f5efba391f612ea9f6183702756c3fa4732`](https://github.com/medusajs/medusa/commit/d9af2f5efba391f612ea9f6183702756c3fa4732) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - feat(core-flows,order,medusa,types): Version shipping method adjustments & implement missing creation flow for versioned adjustments
+
+- [#14799](https://github.com/medusajs/medusa/pull/14799) [`a92ca32b93eaf7f5a8e1fc8b2bbb01763867f6c1`](https://github.com/medusajs/medusa/commit/a92ca32b93eaf7f5a8e1fc8b2bbb01763867f6c1) Thanks [@asgerjensen](https://github.com/asgerjensen)! - add external_id to product-category
+
+- Updated dependencies [[`3ae4162e0f027c4b7035028e183c07c9936fd0c1`](https://github.com/medusajs/medusa/commit/3ae4162e0f027c4b7035028e183c07c9936fd0c1), [`d3a4ec0123d0bfb6910ff38d6d74ece00083e819`](https://github.com/medusajs/medusa/commit/d3a4ec0123d0bfb6910ff38d6d74ece00083e819), [`843dbfe7c8f27b732486c7a8da7b6d63f2fdf967`](https://github.com/medusajs/medusa/commit/843dbfe7c8f27b732486c7a8da7b6d63f2fdf967), [`834553b311aa66b2f2f85131398badb0d6b55b13`](https://github.com/medusajs/medusa/commit/834553b311aa66b2f2f85131398badb0d6b55b13), [`67499a8aa6b3b53cbdecb5be9fcc358b4e466696`](https://github.com/medusajs/medusa/commit/67499a8aa6b3b53cbdecb5be9fcc358b4e466696), [`e489aebaf301ea2eb2834449af65bc3da7f7465a`](https://github.com/medusajs/medusa/commit/e489aebaf301ea2eb2834449af65bc3da7f7465a), [`965adfe2fc15a024270ac384f819479e8b274e10`](https://github.com/medusajs/medusa/commit/965adfe2fc15a024270ac384f819479e8b274e10), [`5ef7953ec3bbcdafe452db813e5c5b07a1c1f0ba`](https://github.com/medusajs/medusa/commit/5ef7953ec3bbcdafe452db813e5c5b07a1c1f0ba), [`9e1e7082c3437ee2ae01d6752b624d4b4d905604`](https://github.com/medusajs/medusa/commit/9e1e7082c3437ee2ae01d6752b624d4b4d905604), [`d9af2f5efba391f612ea9f6183702756c3fa4732`](https://github.com/medusajs/medusa/commit/d9af2f5efba391f612ea9f6183702756c3fa4732), [`d9af2f5efba391f612ea9f6183702756c3fa4732`](https://github.com/medusajs/medusa/commit/d9af2f5efba391f612ea9f6183702756c3fa4732), [`2045c776de29534b86e9c4e0438f7d29f9b79e91`](https://github.com/medusajs/medusa/commit/2045c776de29534b86e9c4e0438f7d29f9b79e91), [`a92ca32b93eaf7f5a8e1fc8b2bbb01763867f6c1`](https://github.com/medusajs/medusa/commit/a92ca32b93eaf7f5a8e1fc8b2bbb01763867f6c1)]:
+  - @medusajs/core-flows@2.13.7
+  - @medusajs/framework@2.13.7
+  - @medusajs/promotion@2.13.7
+  - @medusajs/currency@2.13.7
+  - @medusajs/payment@2.13.7
+  - @medusajs/pricing@2.13.7
+  - @medusajs/region@2.13.7
+  - @medusajs/order@2.13.7
+  - @medusajs/store@2.13.7
+  - @medusajs/cart@2.13.7
+  - @medusajs/workflow-engine-inmemory@2.13.7
+  - @medusajs/workflow-engine-redis@2.13.7
+  - @medusajs/stock-location@2.13.7
+  - @medusajs/fulfillment@2.13.7
+  - @medusajs/inventory@2.13.7
+  - @medusajs/product@2.13.7
+  - @medusajs/settings@2.13.7
+  - @medusajs/analytics@2.13.7
+  - @medusajs/api-key@2.13.7
+  - @medusajs/auth@2.13.7
+  - @medusajs/cache-inmemory@2.13.7
+  - @medusajs/cache-redis@2.13.7
+  - @medusajs/caching@2.13.7
+  - @medusajs/customer@2.13.7
+  - @medusajs/event-bus-local@2.13.7
+  - @medusajs/event-bus-redis@2.13.7
+  - @medusajs/file@2.13.7
+  - @medusajs/index@2.13.7
+  - @medusajs/link-modules@2.13.7
+  - @medusajs/locking@2.13.7
+  - @medusajs/notification@2.13.7
+  - @medusajs/analytics-local@2.13.7
+  - @medusajs/analytics-posthog@2.13.7
+  - @medusajs/auth-emailpass@2.13.7
+  - @medusajs/auth-github@2.13.7
+  - @medusajs/auth-google@2.13.7
+  - @medusajs/caching-redis@2.13.7
+  - @medusajs/file-local@2.13.7
+  - @medusajs/file-s3@2.13.7
+  - @medusajs/fulfillment-manual@2.13.7
+  - @medusajs/locking-postgres@2.13.7
+  - @medusajs/locking-redis@2.13.7
+  - @medusajs/notification-local@2.13.7
+  - @medusajs/notification-sendgrid@2.13.7
+  - @medusajs/payment-stripe@2.13.7
+  - @medusajs/rbac@2.13.7
+  - @medusajs/sales-channel@2.13.7
+  - @medusajs/tax@2.13.7
+  - @medusajs/translation@2.13.7
+  - @medusajs/user@2.13.7
+  - @medusajs/draft-order@2.13.7
+  - @medusajs/admin-bundler@2.13.7
+  - @medusajs/telemetry@2.13.7
+
 ## 2.13.6
 
 ### Patch Changes
