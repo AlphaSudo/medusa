@@ -9,7 +9,7 @@
     "port": 9000,
     "basePath": "",
     "apiSignalPathPrefix": "/admin/",
-    "healthPath": "/health",
+    "healthPath": "/store/products",
     "openApiPath": "/api/openapi.json",
     "appImage": "node:20-alpine",
     "compose": {

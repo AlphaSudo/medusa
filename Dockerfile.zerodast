@@ -4,11 +4,15 @@ RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
+ENV CI=true
+
 RUN npm init -y && \
     npm install @medusajs/medusa@latest @medusajs/medusa-cli@latest
 
 COPY zerodast/medusa-config.js /app/medusa-config.js
+COPY zerodast/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 9000
 
-CMD ["npx", "medusa", "start"]
+CMD ["/app/entrypoint.sh"]

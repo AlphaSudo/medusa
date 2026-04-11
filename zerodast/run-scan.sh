@@ -508,11 +508,8 @@ run_zap() {
   MSYS_NO_PATHCONV=1 "${DOCKER_CMD}" rm -f "${ZAP_CONTAINER}" >/dev/null 2>&1 || true
   MSYS_NO_PATHCONV=1 "${DOCKER_CMD}" run --rm --name "${ZAP_CONTAINER}" \
     --network "${NETWORK_NAME}" \
-    -v "${AUTOMATION_MOUNT}:/zap/wrk/config.yaml:Z" \
-    -v "$(docker_path "${RAW_SPEC}"):/zap/wrk/openapi-raw.json:Z" \
-    -v "$(docker_path "${SANITIZED_SPEC}"):/zap/wrk/openapi-sanitized.json:Z" \
     -v "${REPORT_DIR_MOUNT}:/zap/wrk:Z" \
-    "${ZAP_IMAGE}" zap.sh -cmd -autorun /zap/wrk/config.yaml
+    "${ZAP_IMAGE}" zap.sh -cmd -autorun /zap/wrk/automation.yaml
 }
 
 SECONDS=0
