@@ -11,7 +11,6 @@ RUN git clone --depth 1 --branch master https://github.com/medusajs/medusa-start
 
 RUN npm install --legacy-peer-deps
 
-COPY zerodast/medusa-config.js /app/medusa-config.js
 COPY zerodast/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
