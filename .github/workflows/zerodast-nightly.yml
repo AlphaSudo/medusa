@@ -1,0 +1,79 @@
+name: ZeroDAST Nightly
+
+on:
+  push:
+    branches: [main, develop, zerodast-install]
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: zerodast-nightly-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Start Medusa stack
+        run: docker compose -f docker-compose.zerodast.yml up -d --build
+
+      - name: Wait for Medusa health
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:9000/health >/dev/null 2>&1; then
+              echo "Medusa is ready"
+              break
+            fi
+            echo "Waiting... ($i)"
+            sleep 3
+          done
+
+      - name: Seed admin user
+        run: |
+          chmod +x zerodast/seed.sh
+          bash zerodast/seed.sh http://localhost:9000
+
+      - name: Run ZeroDAST nightly scan
+        env:
+          ZERODAST_MODE: nightly
+        run: |
+          chmod +x zerodast/run-scan.sh
+          zerodast/run-scan.sh
+
+      - name: Upload ZeroDAST report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zerodast-nightly-report
+          path: zerodast/reports
+          if-no-files-found: warn
+
+      - name: Write summary
+        if: always()
+        run: |
+          for f in zerodast/reports/summary.md zerodast/reports/operational-reliability.md zerodast/reports/result-state.md zerodast/reports/api-inventory.md; do
+            if [ -f "$f" ]; then
+              cat "$f" >> "$GITHUB_STEP_SUMMARY"
+              echo "" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+          if [ ! -f zerodast/reports/summary.md ]; then
+            echo 'ZeroDAST summary not produced.' >> "$GITHUB_STEP_SUMMARY"
+          fi
