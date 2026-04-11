@@ -31,30 +31,11 @@ jobs:
         with:
           node-version: 22
 
-      - name: Start Medusa stack
-        run: docker compose -f docker-compose.zerodast.yml up -d --build
-
-      - name: Wait for Medusa health
-        run: |
-          for i in $(seq 1 60); do
-            if curl -sf http://localhost:9000/health >/dev/null 2>&1; then
-              echo "Medusa is ready"
-              break
-            fi
-            echo "Waiting... ($i)"
-            sleep 3
-          done
-
-      - name: Seed admin user
-        run: |
-          chmod +x zerodast/seed.sh
-          bash zerodast/seed.sh http://localhost:9000
-
       - name: Run ZeroDAST nightly scan
         env:
           ZERODAST_MODE: nightly
         run: |
-          chmod +x zerodast/run-scan.sh
+          chmod +x zerodast/run-scan.sh zerodast/seed.sh
           zerodast/run-scan.sh
 
       - name: Upload ZeroDAST report

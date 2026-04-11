@@ -1,0 +1,14 @@
+FROM node:20-alpine
+
+RUN apk add --no-cache python3 make g++
+
+WORKDIR /app
+
+RUN npm init -y && \
+    npm install @medusajs/medusa@latest @medusajs/medusa-cli@latest
+
+COPY zerodast/medusa-config.js /app/medusa-config.js
+
+EXPOSE 9000
+
+CMD ["npx", "medusa", "start"]

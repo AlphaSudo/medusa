@@ -16,7 +16,8 @@
       "upCommand": "docker compose -f docker-compose.zerodast.yml up -d --build",
       "downCommand": "docker compose -f docker-compose.zerodast.yml down -v --remove-orphans",
       "networkName": "medusa_default",
-      "appHost": "medusa"
+      "appHost": "medusa",
+      "seedCommand": "bash zerodast/seed.sh http://localhost:9000"
     }
   },
   "auth": {

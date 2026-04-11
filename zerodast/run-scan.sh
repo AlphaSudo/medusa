@@ -343,6 +343,14 @@ if ! wait_for_health 60; then
 fi
 echo "Target healthy at ${SCANNER_BASE_ROOT}${TARGET_HEALTH_PATH}"
 
+# --- Seed (runs on host, after health, before auth) ---
+SEED_COMMAND="$(cfg target.compose.seedCommand)"
+if [[ -n "${SEED_COMMAND}" ]]; then
+  echo "Running seed command: ${SEED_COMMAND}"
+  (cd "${REPO_ROOT}" && eval "${SEED_COMMAND}")
+  echo "Seed complete"
+fi
+
 # --- Auth bootstrap ---
 if [[ -n "${AUTH_ADAPTER}" && -n "${AUTH_LOGIN_PATH}" ]]; then
   echo "Running auth adapter: ${AUTH_ADAPTER}"
