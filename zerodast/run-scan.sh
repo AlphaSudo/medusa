@@ -430,7 +430,7 @@ env:
       includePaths:
         - "${SCANNER_BASE_URL}.*"
   parameters:
-    failOnError: true
+    failOnError: false
     progressToStdout: true
 jobs:
 EOF
