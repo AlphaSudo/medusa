@@ -16,12 +16,12 @@ for i in $(seq 1 90); do
   sleep 3
 done
 
-echo "Verifying admin login..."
-RESP=$(curl -sf -X POST "${BASE_URL}/admin/auth/token" \
+echo "Verifying admin login (v2 endpoint)..."
+RESP=$(curl -sf -X POST "${BASE_URL}/auth/user/emailpass" \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@medusa-test.dev","password":"supersecret"}' 2>&1) || true
 
-if echo "${RESP}" | grep -q "access_token"; then
+if echo "${RESP}" | grep -q "token"; then
   echo "Admin login verified -- JWT obtained"
 else
   echo "Warning: admin login response: $(echo "${RESP}" | head -c 300)"

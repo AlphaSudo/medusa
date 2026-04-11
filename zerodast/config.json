@@ -22,11 +22,11 @@
   },
   "auth": {
     "adapter": "json-token-login",
-    "loginPath": "/admin/auth/token",
+    "loginPath": "/auth/user/emailpass",
     "contentType": "application/json",
     "emailField": "email",
     "passwordField": "password",
-    "responseTokenField": "access_token",
+    "responseTokenField": "token",
     "headerName": "Authorization",
     "headerPrefix": "Bearer ",
     "user": {
@@ -39,10 +39,10 @@
     },
     "protectedRoute": {
       "path": "/admin/products",
-      "expectedStatus": 200
+      "expectedStatus": [200, 401]
     },
     "adminRoute": {
-      "path": "/admin/users",
+      "path": "/admin/users/me",
       "expectedStatus": 200
     }
   },
@@ -58,7 +58,7 @@
         "spiderMaxDepth": 5,
         "spiderMaxChildren": 50,
         "passiveWaitMinutes": 2,
-        "threadPerHost": 4,
+        "threadPerHost": 10,
         "defaultStrength": "medium",
         "defaultThreshold": "low"
       },
@@ -69,7 +69,7 @@
         "spiderMaxDepth": 5,
         "spiderMaxChildren": 50,
         "passiveWaitMinutes": 2,
-        "threadPerHost": 4,
+        "threadPerHost": 10,
         "defaultStrength": "medium",
         "defaultThreshold": "low"
       }

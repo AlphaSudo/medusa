@@ -1,11 +1,11 @@
 #!/bin/sh
 set -e
 
-echo "Running Medusa database migrations..."
-npx medusa migrations run 2>&1 || echo "Migrations may have already been applied"
+echo "Running Medusa v2 database migrations..."
+npx medusa db:migrate 2>&1 || echo "Migrations may have already been applied"
 
-echo "Seeding database with default data..."
-npx medusa seed --seed-file=data/seed.json 2>&1 || echo "Seed may have already been applied"
+echo "Creating admin user..."
+npx medusa user -e admin@medusa-test.dev -p supersecret 2>&1 || echo "Admin user may already exist"
 
 echo "Starting Medusa server..."
 exec npx medusa start
