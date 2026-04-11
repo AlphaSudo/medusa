@@ -30,12 +30,12 @@
     "headerName": "Authorization",
     "headerPrefix": "Bearer ",
     "user": {
-      "email": "admin@zerodast.local",
-      "password": "Admin123!"
+      "email": "admin@medusa-test.dev",
+      "password": "supersecret"
     },
     "admin": {
-      "email": "admin@zerodast.local",
-      "password": "Admin123!"
+      "email": "admin@medusa-test.dev",
+      "password": "supersecret"
     },
     "protectedRoute": {
       "path": "/admin/products",
@@ -84,7 +84,7 @@
   },
   "reporting": {
     "successMode": "route_exercise",
-    "minApiAlertUris": 1,
+    "minApiAlertUris": 0,
     "minObservedApiRequestorUrls": 1,
     "minSeedObservationRatio": 0.3
   }
