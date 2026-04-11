@@ -9,24 +9,24 @@
     "port": 9000,
     "basePath": "",
     "apiSignalPathPrefix": "/admin/",
-    "healthPath": "/store/products",
-    "openApiPath": "/api/openapi.json",
+    "healthPath": "/health",
+    "openApiPath": "",
     "appImage": "node:20-alpine",
     "compose": {
       "upCommand": "docker compose -f docker-compose.zerodast.yml up -d --build",
       "downCommand": "docker compose -f docker-compose.zerodast.yml down -v --remove-orphans",
       "networkName": "medusa_default",
       "appHost": "medusa",
-      "seedCommand": "bash zerodast/seed.sh http://localhost:9000"
+      "seedCommand": ""
     }
   },
   "auth": {
     "adapter": "json-token-login",
-    "loginPath": "/auth/user/emailpass",
+    "loginPath": "/admin/auth/token",
     "contentType": "application/json",
     "emailField": "email",
     "passwordField": "password",
-    "responseTokenField": "token",
+    "responseTokenField": "access_token",
     "headerName": "Authorization",
     "headerPrefix": "Bearer ",
     "user": {
@@ -42,7 +42,7 @@
       "expectedStatus": 200
     },
     "adminRoute": {
-      "path": "/admin/products",
+      "path": "/admin/users",
       "expectedStatus": 200
     }
   },

@@ -336,8 +336,13 @@ wait_for_health() {
   return 1
 }
 
-if ! wait_for_health 60; then
+if ! wait_for_health 90; then
   echo "Timed out waiting for target health endpoint at ${SCANNER_BASE_ROOT}${TARGET_HEALTH_PATH}" >&2
+  if [[ "${TARGET_RUNTIME_MODE}" == "compose" ]]; then
+    echo "--- Container logs for debugging ---"
+    (cd "${TARGET_DIR}" && docker compose -f docker-compose.zerodast.yml logs --tail=80 2>&1) || true
+    echo "--- End container logs ---"
+  fi
   write_operational_reliability
   exit 1
 fi
@@ -505,6 +510,7 @@ EOF
 
 # --- Run ZAP ---
 run_zap() {
+  chmod 777 "${REPORT_DIR}" 2>/dev/null || true
   MSYS_NO_PATHCONV=1 "${DOCKER_CMD}" rm -f "${ZAP_CONTAINER}" >/dev/null 2>&1 || true
   MSYS_NO_PATHCONV=1 "${DOCKER_CMD}" run --rm --name "${ZAP_CONTAINER}" \
     --network "${NETWORK_NAME}" \
