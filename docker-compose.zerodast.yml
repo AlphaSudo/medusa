@@ -14,7 +14,7 @@ services:
       REDIS_URL: redis://redis:6379
       JWT_SECRET: zerodast-ci-jwt-secret
       COOKIE_SECRET: zerodast-ci-cookie-secret
-      NODE_ENV: development
+      NODE_ENV: production
       STORE_CORS: "http://localhost:8000"
       ADMIN_CORS: "http://localhost:7001"
     ports:

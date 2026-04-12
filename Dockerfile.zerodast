@@ -11,6 +11,9 @@ RUN git clone --depth 1 --branch master https://github.com/medusajs/medusa-start
 
 RUN npm install --legacy-peer-deps
 
+# Medusa v2 requires a production build before `medusa start` (otherwise DB loaders fail with missing tables).
+RUN npm run build
+
 COPY zerodast/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
