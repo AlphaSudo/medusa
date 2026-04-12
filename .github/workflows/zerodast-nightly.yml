@@ -36,6 +36,16 @@ jobs:
           ZERODAST_MODE: nightly
         run: |
           chmod +x zerodast/run-scan.sh zerodast/seed.sh
+          echo "::notice::ZeroDAST: starting scan (heartbeat every 30s until finished)"
+          (
+            while true; do
+              sleep 30
+              echo "::notice::ZeroDAST: still running — compose build/up, health wait, auth, ZAP, or reports ($(date -u '+%Y-%m-%d %H:%M:%S UTC'))"
+            done
+          ) &
+          HEARTBEAT_PID=$!
+          cleanup() { kill "$HEARTBEAT_PID" 2>/dev/null || true; wait "$HEARTBEAT_PID" 2>/dev/null || true; }
+          trap cleanup EXIT
           zerodast/run-scan.sh
 
       - name: Upload ZeroDAST report
