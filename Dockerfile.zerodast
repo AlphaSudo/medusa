@@ -11,8 +11,14 @@ RUN git clone --depth 1 --branch master https://github.com/medusajs/medusa-start
 
 RUN npm install --legacy-peer-deps
 
-# Medusa v2 requires a production build before `medusa start` (otherwise DB loaders fail with missing tables).
-RUN npm run build
+# Production build + align admin output with what `medusa start` serves (./public/admin).
+# The compiler emits the dashboard under .medusa/server/public/admin; the admin loader reads project-root public/admin.
+RUN NODE_ENV=production npm run build && \
+    mkdir -p public && \
+    if [ -d .medusa/server/public/admin ]; then \
+      rm -rf public/admin && cp -a .medusa/server/public/admin public/admin; \
+    fi && \
+    test -f public/admin/index.html
 
 COPY zerodast/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
