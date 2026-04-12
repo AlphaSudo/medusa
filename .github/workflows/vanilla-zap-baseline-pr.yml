@@ -1,0 +1,132 @@
+# Canonical-style PR vanilla ZAP: git delta + passive 2m / active 30m / threadPerHost 4 (delta: no spider).
+name: Vanilla ZAP Baseline PR
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main, develop, zerodast-install]
+    paths:
+      - '.github/workflows/vanilla-zap-baseline-pr.yml'
+      - 'docker-compose.zerodast.yml'
+      - 'Dockerfile.zerodast'
+      - 'zerodast/**'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base for PR delta
+        if: github.event_name == 'pull_request'
+        run: git fetch origin "${{ github.base_ref }}" --depth=100
+
+      - name: Fetch main for workflow_dispatch delta
+        if: github.event_name != 'pull_request'
+        run: git fetch origin main --depth=100 || true
+
+      - name: Set BASE_REF
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "BASE_REF=origin/${{ github.base_ref }}" >> "$GITHUB_ENV"
+          else
+            echo "BASE_REF=origin/main" >> "$GITHUB_ENV"
+          fi
+
+      - name: Start target
+        run: |
+          docker compose -f docker-compose.zerodast.yml up -d --build
+          echo "Waiting for Medusa to be healthy..."
+          for i in $(seq 1 90); do
+            if curl -sf http://localhost:9000/health >/dev/null 2>&1; then
+              echo "Medusa is ready (attempt $i)"
+              break
+            fi
+            sleep 3
+          done
+
+      - name: PR delta + render vanilla automation
+        run: |
+          chmod +x zerodast/pr-canonical/delta-detect-model1.sh zerodast/pr-canonical/render-vanilla-pr-automation.sh
+          export HEAD_REF=HEAD
+          zerodast/pr-canonical/delta-detect-model1.sh | tee /tmp/vanilla-pr-delta.txt
+          mkdir -p vanilla-pr-reports
+          chmod 777 vanilla-pr-reports
+          zerodast/pr-canonical/render-vanilla-pr-automation.sh /tmp/vanilla-pr-delta.txt vanilla-pr-reports/automation.yaml "http://medusa:9000"
+
+      - name: Run vanilla ZAP (canonical PR budget)
+        run: |
+          NETWORK=$(docker network ls --format '{{.Name}}' | grep medusa | head -1)
+          echo "Using network: $NETWORK"
+
+          START_TS=$(date +%s)
+
+          docker run --rm \
+            --network "$NETWORK" \
+            -v "$(pwd)/vanilla-pr-reports:/zap/wrk:rw" \
+            zaproxy/zap-stable:2.17.0 \
+            zap.sh -cmd -autorun /zap/wrk/automation.yaml \
+            2>&1 | tee vanilla-pr-reports/zap-run.log
+
+          END_TS=$(date +%s)
+          DURATION=$((END_TS - START_TS))
+          echo "VANILLA_PR_DURATION=${DURATION}" >> $GITHUB_ENV
+          echo "Vanilla ZAP PR completed in ${DURATION}s"
+
+      - name: Parse results
+        if: always()
+        run: |
+          if [ -f vanilla-pr-reports/zap-report.json ]; then
+            node -e "
+              const r = JSON.parse(require('fs').readFileSync('vanilla-pr-reports/zap-report.json','utf8'));
+              const sites = r.site || [];
+              let high=0, medium=0, low=0, info=0, uris=new Set();
+              for (const s of sites) {
+                for (const a of (s.alerts || [])) {
+                  const risk = parseInt(a.riskcode);
+                  const count = (a.instances || []).length;
+                  if (risk === 3) high += count;
+                  else if (risk === 2) medium += count;
+                  else if (risk === 1) low += count;
+                  else info += count;
+                  for (const inst of (a.instances || [])) {
+                    if (inst.uri) uris.add(inst.uri.split('?')[0]);
+                  }
+                }
+              }
+              const spiderMatch = require('fs').readFileSync('vanilla-pr-reports/zap-run.log','utf8').match(/spider found (\\d+) URLs/);
+              const spiderUrls = spiderMatch ? spiderMatch[1] : 'unknown';
+              const summary = {
+                mode: 'pr',
+                duration: process.env.VANILLA_PR_DURATION + 's',
+                spiderUrls,
+                alerts: { high, medium, low, informational: info },
+                totalAlertInstances: high + medium + low + info,
+                uniqueAlertUris: uris.size,
+                alertUris: [...uris].sort()
+              };
+              require('fs').writeFileSync('vanilla-pr-reports/vanilla-pr-summary.json', JSON.stringify(summary, null, 2));
+              console.log(JSON.stringify(summary, null, 2));
+            "
+          else
+            echo '{}' > vanilla-pr-reports/vanilla-pr-summary.json
+          fi
+
+      - name: Write summary
+        if: always()
+        run: |
+          echo "## Vanilla ZAP Baseline PR: Medusa" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Canonical PR budget: FULL → spider 2m, passive 2m, active 30m, threadPerHost 4. Delta → no spider; scoped includePaths + requestor seeds; passive 2m; active 30m." >> $GITHUB_STEP_SUMMARY
+          if [ -f vanilla-pr-reports/vanilla-pr-summary.json ]; then
+            cat vanilla-pr-reports/vanilla-pr-summary.json >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vanilla-zap-pr-baseline
+          path: vanilla-pr-reports/
