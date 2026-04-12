@@ -10,7 +10,8 @@ services:
       redis:
         condition: service_started
     environment:
-      DATABASE_URL: postgres://medusa:medusa@postgres:5432/medusa
+      # Medusa v2 + node-pg defaults can require SSL; local Postgres has no TLS — disable explicitly.
+      DATABASE_URL: postgres://medusa:medusa@postgres:5432/medusa?sslmode=disable
       REDIS_URL: redis://redis:6379
       JWT_SECRET: zerodast-ci-jwt-secret
       COOKIE_SECRET: zerodast-ci-cookie-secret
