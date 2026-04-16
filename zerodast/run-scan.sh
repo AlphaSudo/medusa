@@ -419,7 +419,7 @@ SCAN_MINUTES="$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSy
 THREAD_PER_HOST="$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(String(c.modeConfig.threadPerHost||10));" "$(node_path "${PREPARED_CONFIG}")")"
 DEFAULT_STRENGTH="$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(String(c.modeConfig.defaultStrength||'medium'));" "$(node_path "${PREPARED_CONFIG}")")"
 DEFAULT_THRESHOLD="$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(String(c.modeConfig.defaultThreshold||'low'));" "$(node_path "${PREPARED_CONFIG}")")"
-ZAP_IMAGE="zaproxy/zap-stable:${ZAP_VERSION}"
+ZAP_IMAGE="${ZAP_IMAGE:-zaproxy/zap-stable:${ZAP_VERSION}}"
 SPEC_MODE="raw"
 
 # --- Write ZAP automation config ---
