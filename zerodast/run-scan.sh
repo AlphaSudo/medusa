@@ -8,6 +8,9 @@ REPORT_DIR="${ROOT_DIR}/reports"
 SCRIPTS_DIR="${ROOT_DIR}/scripts"
 MODE="${ZERODAST_MODE:-pr}"
 DOCKER_CMD="${ZERODAST_DOCKER_CMD:-docker}"
+SCAN_PROFILE="${SCAN_PROFILE:-}"
+ZERODAST_PROFILE_TOOL_ROOT="${ZERODAST_PROFILE_TOOL_ROOT:-}"
+ZAP_PROFILE_MERGED_PATH="${ZAP_PROFILE_MERGED_PATH:-${REPORT_DIR}/profiled-automation.yaml}"
 DOCKER_REQUIRES_WINDOWS_PATHS="false"
 NODE_REQUIRES_WINDOWS_PATHS="false"
 RUN_STARTED_AT="$(date +%s)"
@@ -520,6 +523,15 @@ run_zap() {
 
 SECONDS=0
 write_config "file:///zap/wrk/openapi-raw.json"
+if [[ -n "${SCAN_PROFILE:-}" && -n "${ZERODAST_PROFILE_TOOL_ROOT:-}" && -f "${SCAN_PROFILE}" ]]; then
+  echo "Applying scan profile: ${SCAN_PROFILE}"
+  node "$(node_path "${ZERODAST_PROFILE_TOOL_ROOT}/scripts/build-profiled-automation.js")" \
+    --base "$(node_path "${AUTOMATION_PATH}")" \
+    --profile "$(node_path "${SCAN_PROFILE}")" \
+    --rest-base "$(node_path "${ZERODAST_PROFILE_TOOL_ROOT}/security/profiles/base-rest-api.yaml")" \
+    --output "$(node_path "${ZAP_PROFILE_MERGED_PATH}")"
+  cp "${ZAP_PROFILE_MERGED_PATH}" "${AUTOMATION_PATH}"
+fi
 ZAP_RUN_REQUESTED=true
 set +e
 run_zap > "${LOG_PATH}" 2>&1

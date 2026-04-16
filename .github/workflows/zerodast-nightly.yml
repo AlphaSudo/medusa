@@ -1,5 +1,5 @@
 name: ZeroDAST Nightly
-run-name: ZeroDAST Nightly (${{ github.event_name == 'workflow_dispatch' && inputs.zap_variant || 'stock' }})
+run-name: ZeroDAST Nightly (${{ github.event_name == 'workflow_dispatch' && format('{0}/{1}', inputs.zap_variant, inputs.profile_variant) || 'stock/unprofiled' }})
 
 on:
   push:
@@ -16,12 +16,20 @@ on:
         options:
           - stock
           - surgical
+      profile_variant:
+        description: Scan profile mode to benchmark
+        required: false
+        default: unprofiled
+        type: choice
+        options:
+          - unprofiled
+          - profiled
 
 permissions:
   contents: read
 
 concurrency:
-  group: zerodast-nightly-${{ github.ref }}-${{ github.event_name == 'workflow_dispatch' && inputs.zap_variant || 'stock' }}
+  group: zerodast-nightly-${{ github.ref }}-${{ github.event_name == 'workflow_dispatch' && inputs.zap_variant || 'stock' }}-${{ github.event_name == 'workflow_dispatch' && inputs.profile_variant || 'unprofiled' }}
   cancel-in-progress: true
 
 jobs:
@@ -40,6 +48,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Checkout ZeroDAST profile tools
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.profile_variant == 'profiled' }}
+        uses: actions/checkout@v4
+        with:
+          repository: AlphaSudo/zerodast
+          ref: codex/nightly-v2-surgical
+          path: zerodast-benchmark-tools
+          fetch-depth: 1
+          sparse-checkout: |
+            scripts/build-profiled-automation.js
+            security/profiles/base-rest-api.yaml
+            security/profiles/target-medusa.yaml
 
       - name: Resolve scanner image
         id: scanner
@@ -108,6 +129,7 @@ jobs:
         env:
           ZERODAST_MODE: nightly
           ZAP_IMAGE: ${{ steps.scanner.outputs.zap_image }}
+          PROFILE_VARIANT: ${{ github.event_name == 'workflow_dispatch' && inputs.profile_variant || 'unprofiled' }}
         run: |
           chmod +x zerodast/run-scan.sh zerodast/seed.sh
           echo "::notice::ZeroDAST: starting scan (heartbeat every 30s until finished)"
@@ -120,13 +142,18 @@ jobs:
           HEARTBEAT_PID=$!
           cleanup() { kill "$HEARTBEAT_PID" 2>/dev/null || true; wait "$HEARTBEAT_PID" 2>/dev/null || true; }
           trap cleanup EXIT
+          if [ "${PROFILE_VARIANT}" = "profiled" ]; then
+            export ZERODAST_PROFILE_TOOL_ROOT="${GITHUB_WORKSPACE}/zerodast-benchmark-tools"
+            export SCAN_PROFILE="${GITHUB_WORKSPACE}/zerodast-benchmark-tools/security/profiles/target-medusa.yaml"
+            export ZAP_PROFILE_MERGED_PATH="${RUNNER_TEMP}/profiled-automation.yaml"
+          fi
           zerodast/run-scan.sh
 
       - name: Upload ZeroDAST report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: zerodast-nightly-report-${{ steps.scanner.outputs.zap_variant }}
+          name: zerodast-nightly-report-${{ steps.scanner.outputs.zap_variant }}-${{ github.event_name == 'workflow_dispatch' && inputs.profile_variant || 'unprofiled' }}
           path: zerodast/reports
           if-no-files-found: warn
 
@@ -135,6 +162,7 @@ jobs:
         run: |
           echo "Scanner variant: ${{ steps.scanner.outputs.zap_variant }}" >> "$GITHUB_STEP_SUMMARY"
           echo "Scanner image: \`${{ steps.scanner.outputs.zap_image }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Profile variant: ${{ github.event_name == 'workflow_dispatch' && inputs.profile_variant || 'unprofiled' }}" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           for f in zerodast/reports/summary.md zerodast/reports/operational-reliability.md zerodast/reports/result-state.md zerodast/reports/api-inventory.md; do
             if [ -f "$f" ]; then
