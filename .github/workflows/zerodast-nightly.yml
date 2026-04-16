@@ -59,8 +59,14 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             scripts/build-profiled-automation.js
+            scripts/package.json
+            scripts/package-lock.json
             security/profiles/base-rest-api.yaml
             security/profiles/target-medusa.yaml
+
+      - name: Install ZeroDAST profile tool dependencies
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.profile_variant == 'profiled' }}
+        run: npm ci --prefix zerodast-benchmark-tools/scripts
 
       - name: Resolve scanner image
         id: scanner
